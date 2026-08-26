@@ -1,39 +1,37 @@
+from modelos.avaliacao import Avaliacao
 class Restaurante:
-    nome = ''
-    categoria = ''
-    ativo = False
+    restaurantes = []
+    def __init__(self, nome, categoria):
+        self._nome = nome.title()
+        self._categoria = categoria.upper() 
+        self._ativo = False
+        self._avaliacao = []
+        Restaurante.restaurantes.append(self)
 
-restaurante_praca = Restaurante()
-restaurante_praca.nome = 'Praça'
-restaurante_praca.categoria = 'Italiana'
+    def __str__(self):
+        return f'{self._nome} | {self._categoria}'
 
+    @classmethod
+    def listar_restaurantes(cls):
+        print(f'{'Nome do Restaurante'.ljust(25)} | {'Categoria do Restaurante'.ljust(25)} | {'Avaliacao'.ljust(25)} | {'Status'}')
+        for restaurante in cls.restaurantes:        
+            print(f'{restaurante._nome.ljust(25)} | {restaurante._categoria.ljust(25)} | {str(restaurante.media_avaliacoes).ljust(25)} | {restaurante.ativo}') 
+    @property
+    def ativo(self):
+        return '☒' if self._ativo else '☐' 
 
-restaurante_pizza = Restaurante()
-restaurante_pizza.nome = 'Pizza Place'
-restaurante_pizza.categoria = 'Fast-Food'
+    def alternar_estado(self):
+        self._ativo = not self._ativo 
 
+    def receber_avaliacao(self, cliente, nota):
+        avaliacao = Avaliacao(cliente, nota)
+        self._avaliacao.append(avaliacao)    
 
-
-restaurantes = [restaurante_praca, restaurante_pizza]
-
-print(restaurante_praca.nome)
-
-nomedorestaurente = restaurante_praca.nome
-
-if restaurante_praca.ativo:
-    print('O restaurante esta ativo')
-else:
-    print('O restaurante esta inativo')
-
-categoria = Restaurante.categoria
-
-restaurante_praca.nome = 'Bistrô'
-
-if restaurante_pizza.categoria == 'Fast-Food':
-    print('A categoria é fast food')
-else:
-    print('A categoria não é fast food')
-
-restaurante_pizza.ativo = True
-
-print(f'Nome do Restaurante: {restaurante_praca.nome} Categoria do Restaurante: {restaurante_praca.categoria}')
+    @property
+    def media_avaliacoes(self):
+        if not self._avaliacao:
+            return 0
+        soma_das_notas = sum(avaliacao._nota for avaliacao in self._avaliacao)
+        quantidade_de_notas = len(self._avaliacao)
+        media = round(soma_das_notas / quantidade_de_notas, 1)
+        return media
